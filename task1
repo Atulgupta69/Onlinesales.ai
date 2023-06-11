@@ -1,7 +1,7 @@
-SELECT d.name AS DEPT_NAME, AVG(s.Amt_usd) AS AVG_MONTHLY_SALARY
-FROM Departments d
-JOIN Employees e ON d.id = e.dept_id
-JOIN salaries s ON e.id = s.emp_id
-GROUP BY d.id, d.name
-ORDER BY AVG_MONTHLY_SALARY DESC
+SELECT d.name AS department_name, AVG(s.amount) AS average_monthly_salary
+FROM department d
+JOIN employees e ON d.ID = e.DEPT_ID
+JOIN salaries s ON e.ID = s.emp_id
+GROUP BY d.name
+ORDER BY average_monthly_salary DESC
 LIMIT 3;
