@@ -1,27 +1,23 @@
-import csv
+import pandas as pd
 
-def read_csv(filename):
-  with open(filename, 'r') as f:
-    reader = csv.reader(f)
-    return list(reader)
+# Read data from the department table
+department_df = pd.read_csv('department.csv')
 
-def get_top_3_departments(employees, salaries):
-  departments = {}
-  for employee in employees:
-    department = employee['dept_id']
-    if department not in departments:
-      departments[department] = []
-    departments[department].append(employee['salary'])
+# Read data from the employees table
+employees_df = pd.read_csv('employees.csv')
 
-  for department, salaries in departments.items():
-    departments[department] = sum(salaries) / len(salaries)
+# Read data from the salaries table
+salaries_df = pd.read_csv('salaries.csv')
 
-  top_3_departments = sorted(departments.items(), key=lambda x: x[1], reverse=True)[:3]
-  return top_3_departments
+# Merge the tables to get department names and salaries
+merged_df = pd.merge(employees_df, salaries_df, left_on='ID', right_on='emp_id')
+merged_df = pd.merge(merged_df, department_df, left_on='DEPT ID', right_on='ID')
 
-if _name_ == '_main_':
-  employees = read_csv('employees.csv')
-  salaries = read_csv('salaries.csv')
-  top_3_departments = get_top_3_departments(employees, salaries)
-  for department, average_salary in top_3_departments:
-    print(f'{department} | {average_salary}')
+# Calculate the average monthly salary for each department
+average_salaries = merged_df.groupby('name')['amount'].mean().reset_index()
+average_salaries.columns = ['Department Name', 'Average Monthly Salary']
+average_salaries = average_salaries.sort_values(by='Average Monthly Salary', ascending=False).head(3)
+
+# Print the report of top 3 departments
+print("Top 3 Departments:")
+print(average_salaries.to_string(index=False))
